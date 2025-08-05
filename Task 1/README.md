@@ -4,7 +4,7 @@
  
 This project contains a simple, designed HTML page that displays:
  
-<img width="1236" height="640" alt="image" src="https://github.com/user-attachments/assets/5789a3ed-534c-458a-bc30-7138cf8d3715" />
+<img width="1836" height="881" alt="image" src="https://github.com/user-attachments/assets/afc83bf7-0503-48f3-952d-41f6cde8d979" />
  
  
 ---
