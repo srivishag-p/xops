@@ -4,7 +4,8 @@
 
 This project features a simple, styled static website built using **HTML and CSS**. The webpage is hosted using an **Nginx Docker container** based on a lightweight Alpine Linux image.
 
-<img width="1836" height="881" alt="Website Preview" src="https://github.com/user-attachments/assets/afc83bf7-0503-48f3-952d-41f6cde8d979" />
+<img width="1829" height="858" alt="image" src="https://github.com/user-attachments/assets/4d50ff8c-2d0e-403a-884e-ef1a4a626f2a" />
+
 
 ---
 
