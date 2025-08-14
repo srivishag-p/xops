@@ -26,6 +26,7 @@ Task 2/
 ├── README.md
 └── screenshots/
     └── web-page.png
+    └── execution.png
 ```
 
 ---
