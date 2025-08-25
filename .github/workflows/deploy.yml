@@ -1,37 +1,49 @@
-name: Deploy Flask App
-
+name: 🚀 Deploy Task3 App to EC2
+ 
 on:
   push:
     branches:
       - main
-
+ 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
+ 
     steps:
-      - name: Checkout code
+      - name: Checkout Code
         uses: actions/checkout@v3
-
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.9"
-
-      - name: Install dependencies
+ 
+      - name: Setup SSH
         run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-
-      - name: Deploy to EC2
-        uses: appleboy/ssh-action@v0.1.10
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            cd ~/flask-app
-            git pull origin main
-            pip install -r requirements.txt
-            pkill gunicorn || true
-            nohup gunicorn --bind 0.0.0.0:80 app:app > app.log 2>&1 &
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key.pem
+          chmod 600 ~/.ssh/deploy_key.pem
+          ssh-keyscan -H ${{ secrets.EC2_PUBLIC_IP }} >> ~/.ssh/known_hosts
+ 
+      - name: Deploy Task3 Code to EC2
+        run: |
+          rsync -avz -e "ssh -i ~/.ssh/deploy_key.pem" ./Task\ 3/ \
+            ${{ secrets.SSH_USERNAME }}@${{ secrets.EC2_PUBLIC_IP }}:/home/${{ secrets.SSH_USERNAME }}/app/
+ 
+      - name: Restart App on EC2
+        run: |
+          ssh -i ~/.ssh/deploy_key.pem ${{ secrets.SSH_USERNAME }}@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
+            # Install Python and pip if not already
+            sudo yum install -y python3 python3-pip
+ 
+            # Kill old process if running
+            pkill -f app.py || true
+ 
+            # Navigate to app dir
+            cd ~/app
+ 
+            # Install requirements
+            if [ -f requirements.txt ]; then
+              pip3 install -r requirements.txt
+            else
+              pip3 install flask
+            fi
+ 
+            # Run Flask on port 5000 (non-root safe)
+            nohup python3 app.py > app.log 2>&1 &
+          EOF
