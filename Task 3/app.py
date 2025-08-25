@@ -8,7 +8,7 @@ def home():
 
 @app.route("/api/health")
 def health_check():
-    return jsonify(status="ok", message="App is running fine ✅")
+    return jsonify(status="ok", message="App is running fine")
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
