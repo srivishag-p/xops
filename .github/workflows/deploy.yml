@@ -1,40 +1,37 @@
-name: Deploy Flask App (Simple)
+name: Deploy Flask App
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
-    env:
-      EC2_PUBLIC_IP: ${{ secrets.EC2_PUBLIC_IP }}
-      SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
-
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-      - name: Setup SSH key
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
+
+      - name: Install dependencies
         run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
-          chmod 600 ~/.ssh/deploy_key
-          ssh-keyscan -H "$EC2_PUBLIC_IP" >> ~/.ssh/known_hosts
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-      - name: Deploy Flask App
-        run: |
-          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no $SSH_USERNAME@$EC2_PUBLIC_IP "
-            pkill -f 'python3 app.py' || true
-            rm -rf ~/flaskapp && mkdir -p ~/flaskapp
-          "
-
-          rsync -avz -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no" \
-            './Task 3/' $SSH_USERNAME@$EC2_PUBLIC_IP:~/flaskapp
-
-          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no $SSH_USERNAME@$EC2_PUBLIC_IP "
-            cd ~/flaskapp
-            pip3 install --user -r requirements.txt
-            nohup python3 app.py > app.log 2>&1 &
-          "
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd ~/flask-app
+            git pull origin main
+            pip install -r requirements.txt
+            pkill gunicorn || true
+            nohup gunicorn --bind 0.0.0.0:80 app:app > app.log 2>&1 &
