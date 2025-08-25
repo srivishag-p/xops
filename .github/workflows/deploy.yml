@@ -2,7 +2,7 @@ name: Deploy Flask App (Simple)
 
 on:
   push:
-    branches: [ "main" ]   # Trigger deploy only when pushing to main branch
+    branches: [ "main" ]
 
 jobs:
   deploy:
@@ -25,22 +25,16 @@ jobs:
 
       - name: Deploy Flask App
         run: |
-          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=yes \
-            "$SSH_USERNAME@$EC2_PUBLIC_IP" << 'EOF'
-              # Kill any old Flask process
-              pkill -f "python3 app.py" || true
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no $SSH_USERNAME@$EC2_PUBLIC_IP "
+            pkill -f 'python3 app.py' || true
+            rm -rf ~/flaskapp && mkdir -p ~/flaskapp
+          "
 
-              # Clean previous deployment
-              rm -rf ~/flaskapp
-              mkdir -p ~/flaskapp
-            EOF
+          rsync -avz -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no" \
+            './Task 3/' $SSH_USERNAME@$EC2_PUBLIC_IP:~/flaskapp
 
-          # Copy app files from Task 3
-          rsync -avz -e "ssh -i ~/.ssh/deploy_key" ./Task\ 3/ "$SSH_USERNAME@$EC2_PUBLIC_IP:~/flaskapp"
-
-          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=yes \
-            "$SSH_USERNAME@$EC2_PUBLIC_IP" << 'EOF'
-              cd ~/flaskapp
-              pip3 install --user -r requirements.txt
-              nohup python3 app.py > app.log 2>&1 &
-            EOF
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no $SSH_USERNAME@$EC2_PUBLIC_IP "
+            cd ~/flaskapp
+            pip3 install --user -r requirements.txt
+            nohup python3 app.py > app.log 2>&1 &
+          "
