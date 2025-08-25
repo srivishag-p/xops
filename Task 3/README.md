@@ -1,7 +1,7 @@
 ```markdown
 # 🚀 Flask CI/CD Demo
 
-A simple **Flask** web application to demonstrate running locally and deploying via **GitHub Actions** to **Amazon Linux 2 / Ubuntu EC2**.
+A simple Flask web application to demonstrate running locally and deploying via GitHub Actions to Amazon Linux 2 / Ubuntu EC2.
 
 ---
 
