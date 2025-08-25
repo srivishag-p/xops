@@ -2,7 +2,7 @@ name: Deploy Flask App (Simple)
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main" ]   # Trigger deploy only when pushing to main branch
 
 jobs:
   deploy:
@@ -29,13 +29,13 @@ jobs:
             "$SSH_USERNAME@$EC2_PUBLIC_IP" << 'EOF'
               # Kill any old Flask process
               pkill -f "python3 app.py" || true
-              
-              # Clean old app folder
+
+              # Clean previous deployment
               rm -rf ~/flaskapp
               mkdir -p ~/flaskapp
             EOF
 
-          # Copy only Task 3 folder contents
+          # Copy app files from Task 3
           rsync -avz -e "ssh -i ~/.ssh/deploy_key" ./Task\ 3/ "$SSH_USERNAME@$EC2_PUBLIC_IP:~/flaskapp"
 
           ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=yes \
