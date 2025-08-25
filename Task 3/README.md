@@ -20,6 +20,12 @@ A simple **Flask** web application to demonstrate running locally and deploying 
 ├── requirements.txt # Dependencies
 └── README.md        # Documentation
 
+## Output
+<img width="1919" height="949" alt="image" src="https://github.com/user-attachments/assets/02f383a5-b9c1-45fb-902c-34fb049c521b" />
+<img width="1886" height="766" alt="image" src="https://github.com/user-attachments/assets/8ad208b7-a834-4a7d-b8b4-7d30ef2b1c18" />
+
+
+
 ````
 
 ---
