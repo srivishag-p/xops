@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Terraform + Ansible • DevOps Challenge</title>
+  <meta name="description" content="Provision with Terraform, configure with Ansible, and serve a beautiful landing page via NGINX." />
+  <style>
+    :root{
+      --bg: #0b1020;
+      --card: rgba(255,255,255,0.06);
+      --card-border: rgba(255,255,255,0.12);
+      --accent: #7c5cff;
+      --accent-2:#29d3c2;
+      --text: #e7e9ee;
+      --muted:#a7afc2;
+      --ok:#31d0aa;
+      --warn:#ffcf5a;
+      --err:#ff6b7a;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius: 18px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
+      color:var(--text);
+      background:
+        radial-gradient(1200px 700px at 10% -10%, rgba(124,92,255,.25), transparent 60%),
+        radial-gradient(1200px 700px at 110% 10%, rgba(41,211,194,.25), transparent 60%),
+        var(--bg);
+      line-height:1.5;
+      overflow-x:hidden;
+    }
+    a{color:inherit;text-decoration:none}
+    .container{max-width:1100px;margin:0 auto;padding:28px}
+    header{
+      display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:24px
+    }
+    .brand{
+      display:flex;align-items:center;gap:12px;font-weight:700;letter-spacing:.3px
+    }
+    .logo{
+      width:40px;height:40px;border-radius:12px;
+      background: linear-gradient(135deg,var(--accent),var(--accent-2));
+      box-shadow: var(--shadow);
+    }
+    .chip{
+      padding:6px 10px;border:1px solid var(--card-border);
+      border-radius:999px;background:var(--card);font-size:12px;color:var(--muted)
+    }
+
+    .hero{
+      display:grid;grid-template-columns:1.1fr .9fr;gap:28px;align-items:center
+    }
+    @media (max-width:900px){ .hero{grid-template-columns:1fr} }
+    .card{
+      background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius);
+      box-shadow: var(--shadow);backdrop-filter:saturate(140%) blur(6px);
+    }
+    .hero-left{padding:32px}
+    .title{
+      font-size:clamp(28px,4.8vw,44px);margin:10px 0 12px;line-height:1.15
+    }
+    .subtitle{color:var(--muted);font-size:16px;margin:0 0 18px}
+    .badges{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0 22px}
+    .badge{
+      border:1px dashed var(--card-border);border-radius:999px;padding:8px 12px;font-size:12px;
+      display:inline-flex;align-items:center;gap:8px;color:var(--muted)
+    }
+    .badge .dot{width:7px;height:7px;border-radius:999px;background:var(--ok)}
+    .cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:10px}
+    .btn{
+      padding:12px 16px;border-radius:12px;border:1px solid transparent;cursor:pointer;
+      background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#0b1020;font-weight:700
+    }
+    .btn.secondary{
+      background:transparent;color:var(--text);border-color:var(--card-border)
+    }
+    .hero-right{padding:0}
+    .terminal{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+      padding:18px;border-top-left-radius:var(--radius);border-top-right-radius:var(--radius);
+      background:#0a0f1e;border-bottom:1px solid var(--card-border)
+    }
+    .term-dots{display:flex;gap:8px;margin-bottom:12px}
+    .dot{width:10px;height:10px;border-radius:999px;background:#ff6b6b}
+    .dot.y{background:#ffd166}.dot.g{background:#06d6a0}
+    pre{margin:0;padding:0 0 18px 0;white-space:pre-wrap;word-wrap:break-word}
+    code{font-size:13px;color:#cfe3ff}
+    .pane{padding:18px;border-bottom-left-radius:var(--radius);border-bottom-right-radius:var(--radius)}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:28px}
+    @media (max-width:900px){ .grid{grid-template-columns:1fr} }
+    .kpi{padding:20px}
+    .kpi h3{margin:0 0 6px;font-size:15px;color:var(--muted)}
+    .kpi .value{font-size:22px;font-weight:800}
+    .pill{font-size:12px;padding:6px 10px;border:1px solid var(--card-border);border-radius:999px;color:var(--muted)}
+    footer{margin:36px 0 10px;text-align:center;color:var(--muted);font-size:12px}
+
+    /* subtle float animation */
+    .floaty{animation:floaty 6s ease-in-out infinite}
+    @keyframes floaty {0%{transform:translateY(0)}50%{transform:translateY(-8px)}100%{transform:translateY(0)}}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="logo"></div>
+        <div>
+          <div>XOps Microchallenge #4</div>
+          <div class="chip">Terraform + Ansible + NGINX</div>
+        </div>
+      </div>
+      <div class="chip">Agentless • Idempotent • Reproducible</div>
+    </header>
+
+    <section class="hero">
+      <div class="card hero-left floaty">
+        <div class="badges">
+          <span class="badge"><span class="dot"></span> EC2 reachable</span>
+          <span class="badge"><span class="dot" style="background:var(--warn)"></span> Port 80 open</span>
+          <span class="badge"><span class="dot" style="background:var(--accent)"></span> NGINX active</span>
+        </div>
+        <h1 class="title">Hello from <span style="background:linear-gradient(135deg,var(--accent),var(--accent-2));-webkit-background-clip:text;background-clip:text;color:transparent">Terraform&nbsp;+&nbsp;Ansible</span> 🚀</h1>
+        <p class="subtitle">
+          Provision with Terraform, configure with Ansible, and serve a sleek landing page on NGINX.
+          This page is bundled with your playbook’s <code>copy</code> task.
+        </p>
+        <div class="cta">
+          <a class="btn" href="#" id="open-app">Open App</a>
+          <a class="btn secondary" href="https://aws.amazon.com/ec2/" target="_blank" rel="noreferrer">About EC2</a>
+        </div>
+      </div>
+
+      <div class="card hero-right">
+        <div class="terminal">
+          <div class="term-dots"><span class="dot"></span><span class="dot y"></span><span class="dot g"></span></div>
+          <pre><code># Deployed via Ansible
+$ ansible-playbook -i inventory site.yml
+
+PLAY [web] *****************************************************************
+TASK [Install NGINX] ............................................... changed
+TASK [Copy custom HTML] ............................................ changed
+TASK [Ensure nginx is running] ......................................... ok
+
+PLAY RECAP ***************************************************************
+ec2-xx-xx-xx-xx.compute-1.amazonaws.com : ok=3  changed=2  failed=0
+</code></pre>
+        </div>
+        <div class="pane">
+          <div class="grid">
+            <div class="card kpi">
+              <h3>Instance</h3>
+              <div class="value" id="ip">EC2: <span class="pill">x.x.x.x</span></div>
+            </div>
+            <div class="card kpi">
+              <h3>Stack</h3>
+              <div class="value">Terraform · Ansible · NGINX</div>
+            </div>
+            <div class="card kpi">
+              <h3>Status</h3>
+              <div class="value"><span class="pill">Running</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section style="margin-top:28px">
+      <div class="grid">
+        <div class="card kpi">
+          <h3>What happened?</h3>
+          <p style="margin:8px 0 0;color:var(--muted)">
+            Terraform created the EC2 instance + security group. Ansible installed NGINX,
+            copied this <code>index.html</code>, and enabled the service.
+          </p>
+        </div>
+        <div class="card kpi">
+          <h3>Where’s this served from?</h3>
+          <p style="margin:8px 0 0;color:var(--muted)">
+            <code>/var/www/html/index.html</code> via NGINX default site on port 80.
+          </p>
+        </div>
+        <div class="card kpi">
+          <h3>Next steps</h3>
+          <p style="margin:8px 0 6px;color:var(--muted)">
+            Replace this UI, add health checks, or deploy a simple API behind NGINX.
+          </p>
+          <div class="cta">
+            <a class="btn secondary" href="#" id="copy-ip">Copy Public IP</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      © <span id="year"></span> DevOps Challenge • Built with ❤️ using Terraform &amp; Ansible
+    </footer>
+  </div>
+
+  <script>
+    // Update year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Optional: set your EC2 public IP here (Ansible can template this if you like)
+    const EC2_PUBLIC_IP = ""; // e.g., "18.210.123.45"
+
+    const ipEl = document.getElementById('ip');
+    const openBtn = document.getElementById('open-app');
+    const copyBtn = document.getElementById('copy-ip');
+
+    if (EC2_PUBLIC_IP) {
+      ipEl.innerHTML = 'EC2: <span class="pill">' + EC2_PUBLIC_IP + '</span>';
+      openBtn.href = 'http://' + EC2_PUBLIC_IP;
+      openBtn.setAttribute('target','_blank');
+      openBtn.setAttribute('rel','noreferrer');
+    } else {
+      openBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        alert('Set EC2_PUBLIC_IP in index.html to enable this button.');
+      });
+    }
+
+    copyBtn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      const text = EC2_PUBLIC_IP || 'Set EC2_PUBLIC_IP in index.html';
+      try {
+        await navigator.clipboard.writeText(text);
+        copyBtn.textContent = 'Copied!';
+        setTimeout(() => copyBtn.textContent = 'Copy Public IP', 1400);
+      } catch {
+        alert(text);
+      }
+    });
+  </script>
+</body>
+</html>
