@@ -96,9 +96,9 @@ terraform destroy -auto-approve
 
 ## 📸 Demo Screenshots
 
-* Terraform EC2 Instance
-* Ansible Playbook Execution
-* Deployed Webpage Output
+<img width="1918" height="879" alt="Screenshot 2025-08-26 141228" src="https://github.com/user-attachments/assets/78007157-6067-4998-98b3-92ab546e8940" />
+
+<img width="1428" height="551" alt="Screenshot 2025-08-26 141305" src="https://github.com/user-attachments/assets/9ded0052-2854-45c7-a6da-aabf1dc2d7ca" />
 
 ---
 
