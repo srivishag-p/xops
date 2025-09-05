@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/hemanithin22/Xops.git
+    repoURL: https://github.com/srivishag-p/xops.git
     targetRevision: main
     path: Task 6/k8n   # <-- corrected path
   destination:
