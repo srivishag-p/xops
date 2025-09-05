@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
       - name: xops-app
-        image: srivishag-docker/xops-app:latest
+        image: srivishagdocker/xops-app:latest
         ports:
         - containerPort: 80
