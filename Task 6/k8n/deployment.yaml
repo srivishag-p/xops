@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
       - name: xops-app
-        image: srivishagdocker/xops-app:<commit-sha>
+        image: srivishagdocker/xops-app:latest
         ports:
         - containerPort: 80
