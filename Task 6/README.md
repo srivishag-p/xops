@@ -166,4 +166,6 @@ curl http://localhost:30080
 * ✅ App accessible in Kubernetes
 
 ## Screenshots
+<img width="1861" height="962" alt="Screenshot 2025-09-05 150911" src="https://github.com/user-attachments/assets/0e7c3459-5848-436e-b9ea-8fccc14b9ee1" />
+<img width="1919" height="864" alt="Screenshot 2025-09-05 150925" src="https://github.com/user-attachments/assets/ac9285f7-5769-48de-8606-429a7fce32ec" />
 
