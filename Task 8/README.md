@@ -118,6 +118,5 @@ kind delete cluster --name xops
 * **Secrets** provide secure storage for confidential information.
   Together, they enable flexible and secure configuration management in Kubernetes.
 
-```
 
 
